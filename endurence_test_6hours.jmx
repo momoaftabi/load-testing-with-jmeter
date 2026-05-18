@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="LOGIN">
+          <stringProp name="HTTPSampler.domain">staging3.jotno.net</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/auth/login</stringProp>
+          <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;userType&quot;: &quot;${userType}&quot;,&#xd;
+  &quot;doctorType&quot;: &quot;${doctorType}&quot;,&#xd;
+  &quot;username&quot;: &quot;${username}&quot;,&#xd;
+  &quot;password&quot;: &quot;${password}&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+            <stringProp name="filename">C:/Users/admin/Downloads/jme/user_data.csv</stringProp>
+            <stringProp name="fileEncoding"></stringProp>
+            <stringProp name="variableNames">userType,doctorType,username,password</stringProp>
+            <boolProp name="ignoreFirstLine">false</boolProp>
+            <stringProp name="delimiter">,</stringProp>
+            <boolProp name="quotedData">false</boolProp>
+            <boolProp name="recycle">false</boolProp>
+            <boolProp name="stopThread">true</boolProp>
+            <stringProp name="shareMode">shareMode.all</stringProp>
+          </CSVDataSet>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">true</stringProp>
+            <stringProp name="RegexExtractor.refname">AUTHID</stringProp>
+            <stringProp name="RegexExtractor.regex">Set-Cookie: authId=(.*?);</stringProp>
+            <stringProp name="RegexExtractor.template"> $1$ </stringProp>
+            <stringProp name="RegexExtractor.default"></stringProp>
+            <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">
+log.info(vars.get(&apos;AUTHID&apos;));                 
+props.put(&apos;AUTHID&apos;,vars.get(&apos;AUTHID&apos;));
+log.info(props.get(&apos;AUTHID&apos;));   </stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group">
+        <intProp name="ThreadGroup.num_threads">50</intProp>
+        <intProp name="ThreadGroup.ramp_time">10</intProp>
+        <longProp name="ThreadGroup.duration">21600</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <intProp name="LoopController.loops">-1</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">vars.put(&apos;AUTHID&apos;,props.get(&apos;AUTHID&apos;));
+def before = vars.get(&apos;AUTHID&apos;)
+log.info(&apos;Before: &apos; + before)
+def after = before.replaceAll(&apos;\&quot;&apos;, &apos;&apos;)
+log.info(&apos;After: &apos; + after)
+vars.put(&apos;AUTHID1&apos;, after)
+</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223PreProcessor>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="content-type" elementType="Header">
+              <stringProp name="Header.name">content-type</stringProp>
+              <stringProp name="Header.value">application/json  </stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">cookie</stringProp>
+              <stringProp name="Header.value">${AUTHID}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+          <collectionProp name="CookieManager.cookies">
+            <elementProp name="authId" elementType="Cookie" testname="authId">
+              <stringProp name="Cookie.value">${AUTHID1}</stringProp>
+              <stringProp name="Cookie.domain">staging3.jotno.net</stringProp>
+              <stringProp name="Cookie.path">/</stringProp>
+              <boolProp name="Cookie.secure">true</boolProp>
+              <longProp name="Cookie.expires">0</longProp>
+              <boolProp name="Cookie.path_specified">true</boolProp>
+              <boolProp name="Cookie.domain_specified">true</boolProp>
+            </elementProp>
+          </collectionProp>
+          <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+          <stringProp name="CookieManager.policy">netscape</stringProp>
+        </CookieManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="rx no generate" enabled="true">
+          <stringProp name="HTTPSampler.domain">staging3.jotno.net</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/prescription/doctor/1598/rxNumber</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">rxNumber</stringProp>
+            <stringProp name="RegexExtractor.regex">([a-zA-z0-9]+)</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default"></stringProp>
+            <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="new rx" enabled="true">
+          <stringProp name="HTTPSampler.domain">staging3.jotno.net</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/prescription/org/912/doctor/1598/save</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&quot;prescription&quot;:{&quot;rxNumber&quot;:&quot;${rxNumber}&quot;,&quot;complaints&quot;:[{&quot;unit&quot;:&quot;DAY&quot;,&quot;suggestionId&quot;:26,&quot;originalSuggestionId&quot;:26,&quot;name&quot;:&quot;Bleeding&quot;,&quot;originalName&quot;:&quot;Bleeding&quot;,&quot;note&quot;:null,&quot;count&quot;:47,&quot;quadrants&quot;:[],&quot;indexDbNote&quot;:null,&quot;values&quot;:[&quot;10&quot;],&quot;valueJSON&quot;:&quot;[\&quot;10\&quot;]&quot;,&quot;value&quot;:&quot;10&quot;,&quot;duration&quot;:12}],&quot;medicines&quot;:[{&quot;medicineDoses&quot;:[{&quot;schedules&quot;:&quot;1+1+1&quot;,&quot;continued&quot;:false,&quot;duration&quot;:2,&quot;durationUnit&quot;:&quot;DAY&quot;,&quot;unit&quot;:&quot;shampoo&quot;,&quot;schedule&quot;:3}],&quot;drugId&quot;:65250,&quot;name&quot;:&quot;FLYER-Z SHAMPOO 100ml&quot;,&quot;brandName&quot;:&quot;FLYER-Z&quot;,&quot;formation&quot;:&quot;SHAMPOO&quot;,&quot;strength&quot;:&quot;100ml&quot;,&quot;vendor&quot;:&quot;Spatz Cosmeceutical Inc&quot;,&quot;generic&quot;:&quot;KETOCONAZAL, ZINC PYRITHIONE, ALOE VERA&quot;,&quot;count&quot;:11}],&quot;diagnoses&quot;:[{&quot;suggestionId&quot;:158,&quot;originalSuggestionId&quot;:158,&quot;name&quot;:&quot;Abdominal aortic aneurysm&quot;,&quot;originalName&quot;:&quot;Abdominal aortic aneurysm&quot;,&quot;note&quot;:null,&quot;count&quot;:22,&quot;indexDbNote&quot;:null,&quot;teeth&quot;:[],&quot;values&quot;:[&quot;22&quot;],&quot;valueJSON&quot;:&quot;[\&quot;22\&quot;]&quot;,&quot;value&quot;:&quot;22&quot;}],&quot;investigations&quot;:[{&quot;investigationId&quot;:5,&quot;name&quot;:&quot;Platelet Count&quot;,&quot;note&quot;:null,&quot;count&quot;:19,&quot;indexDbNote&quot;:null,&quot;date&quot;:&quot;2024-12-02T18:00:00.000Z&quot;,&quot;teeth&quot;:[],&quot;values&quot;:[],&quot;valueJSON&quot;:null,&quot;value&quot;:&quot;22&quot;}],&quot;examinations&quot;:[{&quot;gynecologyFindings&quot;:{&quot;menstrualHistory&quot;:{},&quot;obstetricsHistory&quot;:{&quot;marriedUnit&quot;:&quot;Year&quot;,&quot;para&quot;:null},&quot;perAbdominalGyne&quot;:{&quot;nad&quot;:false},&quot;perAbdominalPregnency&quot;:{&quot;fundalHeightUnit&quot;:&quot;week&quot;},&quot;perVaginalGyne&quot;:{&quot;utSizeUnitPV&quot;:&quot;week&quot;},&quot;perVaginalPregnency&quot;:{}},&quot;suggestionId&quot;:143,&quot;originalSuggestionId&quot;:143,&quot;name&quot;:&quot;Cyanosis&quot;,&quot;originalName&quot;:&quot;Cyanosis&quot;,&quot;note&quot;:&quot;abc&quot;,&quot;count&quot;:30,&quot;indexDbNote&quot;:&quot;abc&quot;,&quot;teeth&quot;:[],&quot;values&quot;:[&quot;2&quot;],&quot;valueJSON&quot;:&quot;[\&quot;2\&quot;]&quot;,&quot;value&quot;:&quot;2&quot;}],&quot;advices&quot;:[{&quot;suggestionId&quot;:464,&quot;originalSuggestionId&quot;:464,&quot;name&quot;:&quot;আঙ্গুল নাড়াবেন&quot;,&quot;originalName&quot;:&quot;আঙ্গুল নাড়াবেন&quot;,&quot;note&quot;:null,&quot;count&quot;:53,&quot;indexDbNote&quot;:null,&quot;teeth&quot;:[],&quot;values&quot;:[],&quot;valueJSON&quot;:&quot;[]&quot;,&quot;value&quot;:&quot;&quot;}],&quot;allergy&quot;:{},&quot;socialHabit&quot;:{},&quot;followUps&quot;:[],&quot;referrals&quot;:[],&quot;patient&quot;:{&quot;age&quot;:{&quot;year&quot;:5,&quot;month&quot;:3,&quot;day&quot;:28},&quot;name&quot;:&quot;Hehe&quot;,&quot;gender&quot;:&quot;Female&quot;,&quot;phoneNumber&quot;:&quot;01792310222&quot;,&quot;bloodGroup&quot;:&quot;O_POSITIVE&quot;,&quot;fatherName&quot;:&quot;Ndnd&quot;,&quot;motherName&quot;:&quot;Jdjd&quot;,&quot;address&quot;:&quot;Jcj&quot;,&quot;dateOfBirth&quot;:&quot;2019-08-14T18:00:00.000Z&quot;},&quot;vitalSign&quot;:{&quot;lungsType&quot;:[],&quot;pulseUnit&quot;:&quot;bpm&quot;,&quot;temperatureUnit&quot;:&quot;F&quot;,&quot;heightUnit&quot;:&quot;inch&quot;,&quot;weightUnit&quot;:&quot;kg&quot;,&quot;peakFlowRateUnit&quot;:&quot;lpm&quot;,&quot;ofcUnit&quot;:&quot;inch&quot;,&quot;heightInInch&quot;:null,&quot;heightInFeet&quot;:null,&quot;height&quot;:null,&quot;bpSystolic&quot;:&quot;100&quot;,&quot;bpDiastolic&quot;:&quot;80&quot;,&quot;weight&quot;:&quot;80&quot;,&quot;weightCentile&quot;:&quot;Greater than normal&quot;,&quot;heightInCm&quot;:null},&quot;gynecologyFindings&quot;:{&quot;menstrualHistory&quot;:{},&quot;obstetricsHistory&quot;:{&quot;marriedUnit&quot;:&quot;Year&quot;,&quot;para&quot;:null,&quot;married&quot;:null},&quot;perAbdominalGyne&quot;:{&quot;nad&quot;:false},&quot;perAbdominalPregnency&quot;:{&quot;fundalHeightUnit&quot;:&quot;week&quot;},&quot;perVaginalGyne&quot;:{&quot;utSizeUnitPV&quot;:&quot;week&quot;},&quot;perVaginalPregnency&quot;:{}},&quot;investigationOrderReferences&quot;:[],&quot;investigationReferenceEnabled&quot;:false,&quot;patientHistoryDto&quot;:{&quot;historyEditableView&quot;:{&quot;sections&quot;:[],&quot;historyNote&quot;:{&quot;value&quot;:null,&quot;type&quot;:&quot;NOTE&quot;}}},&quot;eyeGlass&quot;:null,&quot;preference&quot;:{&quot;medicationPreference&quot;:&quot;TRADE_NAME&quot;,&quot;language&quot;:null},&quot;visitType&quot;:&quot;New&quot;,&quot;profileId&quot;:&quot;P-2JBBQ2VBD&quot;,&quot;createdDate&quot;:&quot;2024-12-12T11:16:30.597Z&quot;}}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
